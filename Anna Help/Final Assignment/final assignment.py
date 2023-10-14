@@ -16,24 +16,24 @@ def apply_gaussian_filter(image):
     return filtered_image
 
 
-def get_user_input() -> None:
-    
-    
+def get_input_and_arrays() -> (np.ndarray[np.uint8], np.ndarray[np.uint8], int, int, int):
+    source_array: np.ndarray
+    target_array: np.ndarray
     while True:
         source_img_path: str = input(
             'Please Enter Source Image Path:\n').strip()
         target_img_path: str = input(
             'Please Enter Target Image Path:\n').strip()
-        
-
-
-
-
-
-
-
-
-
+        try:
+            source_array = plt.imread(source_img_path).astype(np.uint8)
+            target_array = plt.imread(target_img_path).astype(np.uint8)
+        except FileNotFoundError:
+            print('\
+            One of the file paths entered does not exist\n\
+            or was entered incorrectly.\n\
+            Please try again.')
+            continue
+        break
     selection_width: int
     selection_height: int
     pyramid_levels: int
@@ -55,4 +55,11 @@ def get_user_input() -> None:
         else:
             break
 
-        np.asarray(source_img_path)
+    return (source_array,
+            target_array,
+            selection_width,
+            selection_height,
+            pyramid_levels)
+
+
+get_input_and_arrays()
