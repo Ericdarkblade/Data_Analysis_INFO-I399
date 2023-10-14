@@ -1,0 +1,18 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "db.luddy.indiana.edu",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "I308-ericwalk",
+            "database": "i308f23_ericwalk",
+            "password": "my+sql=i308f23_ericwalk",
+            "username": "i308f23_ericwalk"
+        }
+    ]
+}
