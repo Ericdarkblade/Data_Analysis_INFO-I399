@@ -48,9 +48,9 @@ def get_input_and_arrays() -> (np.ndarray[np.uint8], np.ndarray[np.uint8], int, 
         except ValueError:  # Catches Letters as ints
             print(
                 'A non numerical character was entered into one of the previous fields.\nPlease try again.')
-
-        if selection_width or selection_height or pyramid_levels <= 0:
-            print('Input values must be >0.\nPlease try again.')
+            continue
+        if selection_width <= 0 or selection_height <= 0 or pyramid_levels <= 0:
+            print('\nInput values must be >0.\nPlease try again.\n')
             continue
         else:
             break
@@ -62,4 +62,4 @@ def get_input_and_arrays() -> (np.ndarray[np.uint8], np.ndarray[np.uint8], int, 
             pyramid_levels)
 
 
-get_input_and_arrays()
+print(get_input_and_arrays())
