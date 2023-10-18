@@ -17,3 +17,10 @@ def get_click_coordinates(gray_image):
     x = int(x_click)
     y = int(y_click)
     return (x, y)
+
+
+if __name__ == '__main__':
+    import numpy as np
+    grey_test = plt.imread(
+        "C:\\Users\\ezmos\\OneDrive - Indiana University\\My Courses\\Fall 2023\\INFO-I 399\\Anna Help\\Final Assignment\\imgs\\clark_kent.jpg").astype(np.uint8)
+    print(get_click_coordinates(grey_test))
