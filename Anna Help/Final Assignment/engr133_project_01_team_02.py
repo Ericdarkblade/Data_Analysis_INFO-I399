@@ -1,6 +1,38 @@
+
+"""
+===============================================================================
+ENGR 13300 Fall 2023
+
+Program Description
+    CCCCCCCCCCCCCCCCCCCCCCCCCCC
+
+Assignment Information
+    Assignment:     e.g. Team project 01
+    Author:          Anna-Lizette Walker, walke744@purdue.edu,Shandi Carlisle, carliss@purdue.edu,Ava Egnaczyk, aegnaczy@purdue.edu,Camille Morin, morin13@purdue.edu 
+    Team ID:        LC2 - 02
+
+Contributor:    Name, login@purdue [repeat for each]
+    My contributor(s) helped me:
+    [  Anna-Lizette Walker, walke744@purdue.edu,Shandi Carlisle, carliss@purdue.edu,Ava Egnaczyk, aegnaczy@purdue.edu,Camille Morin, morin13@purdue.edu ] understand the assignment expectations without
+        telling me how they will approach it.
+    [ Anna-Lizette Walker, walke744@purdue.edu,Shandi Carlisle, carliss@purdue.edu,Ava Egnaczyk, aegnaczy@purdue.edu,Camille Morin, morin13@purdue.edu  ] understand different ways to think about a solution
+        without helping me plan my solution.
+    [ Anna-Lizette Walker, walke744@purdue.edu,Shandi Carlisle, carliss@purdue.edu,Ava Egnaczyk, aegnaczy@purdue.edu,Camille Morin, morin13@purdue.edu  ] think through the meaning of a specific error or
+        bug present in my code without looking at my code.
+    Note that if you helped somebody else with their code, you
+    have to list that person as a contributor here as well.
+    
+ACADEMIC INTEGRITY STATEMENT
+I have not used source code obtained from any other unauthorized
+source, either modified or unmodified. Neither have I provided
+access to my code to another. The project I am submitting
+is my own original work.
+===============================================================================
+"""
 import numpy as np
 import matplotlib.pyplot as plt
-import get_coordinates_in_image as gcii  # would not properly import and work
+from get_coordinates_in_image import get_click_coordinates 
+
 
 
 def get_input_and_arrays() -> (np.ndarray[np.uint8], np.ndarray[np.uint8], int, int, int):
@@ -54,19 +86,6 @@ def get_input_and_arrays() -> (np.ndarray[np.uint8], np.ndarray[np.uint8], int, 
     return user_input
 
 
-# def apply_gaussian_filter(image: np.ndarray[np.uint8]):
-
-#     gaussian_filter = np.array([[1, 4, 7, 4, 1],     # define a 5x5 Gaussian kernel
-#                                 [4, 16, 26, 16, 4],
-#                                 [7, 26, 41, 26, 7],  # this works
-#                                 [4, 16, 26, 16, 4],
-#                                 [1, 4, 7, 4, 1]]) / 273.0
-
-#     filtered_image = image.copy()
-#     filtered_image = np.dot(gaussian_filter, image)
-#     print(filtered_image)
-#     return filtered_image
-
 def apply_gaussian_filter(image: np.ndarray):  # Recieved Help from chatGPT
     # Define a 5x5 Gaussian kernel
     gaussian_filter = np.array([[1, 4, 7, 4, 1],
@@ -97,6 +116,8 @@ def apply_gaussian_filter(image: np.ndarray):  # Recieved Help from chatGPT
     filtered_image = np.clip(filtered_image, 0, 255).astype(np.uint8)
 
     return filtered_image
+
+
 
 
 def mask_target_image(x_target, y_target, size, target_array):
@@ -134,23 +155,12 @@ def upsample(image: np.ndarray[np.uint8]):
     # plt.imshow(upsampled_image)
     # plt.show()
 
-    # This section is technically wrong, I just don't know how to do it right,
-    # These values need to be averaged out with the values above and below them after computing the middle layer
-    left_bias_pixels = upsampled[::2, :-2:2]
-    right_bias_pixels = upsampled[::2, 2::2]
-    # close_pixel_gaps = upsampled[::2, 1:-1:2] #Reference doesn't work
-    upsampled[::2, 1:-1:2] = left_bias_pixels + right_bias_pixels / 2
-
-    top_bias_pixels = upsampled[::2]
-    bottom_bias_pixels = upsampled[2:-2:2]
-    upsampled[1::2] = top_bias_pixels + bottom_bias_pixels / 2
-    upsampled[:, -1] = upsampled[:, -2]
-    return upsampled
+    return upsample
 
 
 def make_gray(image: np.ndarray[np.uint8]):
-    # this works
-    gray_image = np.dot(image[..., :3], [0.2989, 0.5870, 0.1140])
+    gray_image = np.dot(image[..., :3],                       # this works
+                        [0.2989, 0.5870, 0.1140])
     return gray_image
 
 
@@ -223,29 +233,31 @@ def main():
     gray_target = make_gray(target_array)
 
     # Select Positions
-    x_source, y_source = gcii.get_click_coordinates(gray_source)
-    x_target, y_target = gcii.get_click_coordinates(gray_target)
+    source_location = get_click_coordinates(gray_source)
+    x_source = source_location[0]
+    y_source = source_location[1]
+    target_location = get_click_coordinates(gray_target)
+    x_target = target_location[0]
+    y_target = target_location[1]
 
-    # # Mask Images
-    # source_mask = mask_source_image(
-    #     x_source, y_source, selection_length, source_array)
-    # target_mask = mask_target_image(
-    #     x_target, y_target, selection_length, target_array)
+    # Mask Images
+    source_mask = mask_source_image(
+        x_source, y_source, selection_length, source_array)
+    target_mask = mask_target_image(
+        x_target, y_target, selection_length, target_array)
 
     # Apply Gausian Blur/Filter
-    source_mask_filter = apply_gaussian_filter(gray_source)
-    target_mask_filter = apply_gaussian_filter(gray_target)
-
-    plt.imshow(source_mask_filter)
-    plt.show()
+    source_mask_filter = apply_gaussian_filter(source_mask)
+    target_mask_filter = apply_gaussian_filter(target_mask)
 
     # Blur & Subsample Image
-    # pyramid_source_array = pyramid_source(source_mask_filter, pyramid_levels)
-    # pyramid_target_array = pyramid_target(target_mask_filter, pyramid_levels)
+    pyramid_source_array = pyramid_source(source_mask_filter, pyramid_levels)
+    pyramid_target_array = pyramid_target(target_mask_filter, pyramid_levels)
 
-    # plt.imshow(pyramid_source_array)
-    # plt.imshow(pyramid_target_array)
+    plt.imshow(pyramid_source_array)
+    plt.imshow(pyramid_target_array)
 
 
 if __name__ == '__main__':
+
     main()
